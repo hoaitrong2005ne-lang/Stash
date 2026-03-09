@@ -1,0 +1,69 @@
+mixed-port: 7890
+mode: rule
+log-level: info
+
+proxies: []
+proxy-providers: {}
+
+proxy-groups:
+  - name: SCRIPT
+    type: select
+    proxies:
+      - DIRECT
+
+http:
+  mitm:
+    - "*.googlevideo.com"
+    - "youtubei.googleapis.com"
+    - "www.youtube.com"
+    - "s.youtube.com"
+    - "api.revenuecat.com"
+    - "*.revenuecat.com"
+
+  script:
+
+    # YouTube Ads
+    - match: ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/
+      name: youtube_ads
+      type: response
+      require-body: true
+      binary-mode: true
+      timeout: 30
+
+    # RevenueCat Response (Locket Gold)
+    - match: ^https?:\/\/api\.revenuecat\.com\/.*\/(receipts$|subscribers\/.*)
+      name: revenuecat_response
+      type: response
+      require-body: true
+      timeout: 60
+
+    # RevenueCat Request Header
+    - match: ^https?:\/\/api\.revenuecat\.com\/.*\/(receipts|subscribers)
+      name: revenuecat_request
+      type: request
+      timeout: 60
+
+script-providers:
+
+  youtube_ads:
+    url: https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js
+    interval: 86400
+
+  revenuecat_response:
+    url: https://raw.githubusercontent.com/app2smile/rules/master/js/revenuecat.js
+    interval: 86400
+
+  revenuecat_request:
+    url: https://raw.githubusercontent.com/app2smile/rules/master/js/revenuecat_header.js
+    interval: 86400
+
+rules:
+  - DOMAIN,api.revenuecat.com,SCRIPT
+  - DOMAIN-SUFFIX,youtube.com,SCRIPT
+  - DOMAIN-SUFFIX,googlevideo.com,SCRIPT
+  - MATCH,DIRECT
+
+dns:
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8

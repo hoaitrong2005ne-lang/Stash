@@ -1,7 +1,7 @@
 dns:
   default-nameserver:
-    - 114.114.114.114
     - 1.1.1.1
+    - 8.8.8.8
   skip-cert-verify: true
 
 log-level: info
@@ -10,34 +10,34 @@ mode: rule
 http:
   mitm:
     - api.revenuecat.com
-    - '*.revenuecat.com'
+    - "*.revenuecat.com"
 
 scripts:
 
-# Locket RevenueCat Response
+  # Locket RevenueCat Response
   - match: ^https?:\/\/api\.revenuecat\.com\/.*\/(receipts$|subscribers\/[^/]+$)
     name: revenuecat_response
     type: response
     require-body: true
-    binary-mode: false
     timeout: 120
-    script-path: https://raw.githubusercontent.com/hoaitrong2005ne-lang/Stash/refs/heads/main/revenuecat.js
+    script-path: https://raw.githubusercontent.com/YOURNAME/Stash/main/revenuecat.js
 
-# Locket RevenueCat Request
+  # Locket RevenueCat Request
   - match: ^https?:\/\/api\.revenuecat\.com\/.*\/(receipts|subscribers)
     name: revenuecat_request_header
     type: request
-    require-body: false
-    binary-mode: false
     timeout: 120
-    script-path: https://raw.githubusercontent.com/hoaitrong2005ne-lang/Stash/refs/heads/main/revenuecat.js
+    script-path: https://raw.githubusercontent.com/YOURNAME/Stash/main/revenuecat.js
 
 rules:
 
-# YouTube Ads
+  # YouTube Ads
   - DOMAIN-SUFFIX,doubleclick.net,REJECT
   - DOMAIN-SUFFIX,googleads.g.doubleclick.net,REJECT
   - DOMAIN-SUFFIX,googlesyndication.com,REJECT
   - DOMAIN-SUFFIX,pagead2.googlesyndication.com,REJECT
+
+  # RevenueCat
+  - DOMAIN-SUFFIX,revenuecat.com,DIRECT
 
   - MATCH,DIRECT

@@ -11,7 +11,7 @@ http:
 
 script-providers:
   revenuecat:
-    url: https://raw.githubusercontent.com/YOURNAME/Stash/main/revenuecat.js
+    url: https://raw.githubusercontent.com/hoaitrong2005ne-lang/Stash/refs/heads/main/revenuecat.js
     interval: 86400
 
 script:

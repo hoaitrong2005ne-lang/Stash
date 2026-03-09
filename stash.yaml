@@ -1,69 +1,30 @@
-mixed-port: 7890
-mode: rule
-log-level: info
+name: Locket + YouTube
 
-proxies: []
-proxy-providers: {}
-
-proxy-groups:
-  - name: SCRIPT
-    type: select
-    proxies:
-      - DIRECT
+dns:
+  enable: true
+  ipv6: false
 
 http:
   mitm:
-    - "*.googlevideo.com"
-    - "youtubei.googleapis.com"
-    - "www.youtube.com"
-    - "s.youtube.com"
-    - "api.revenuecat.com"
-    - "*.revenuecat.com"
-
-  script:
-
-    # YouTube Ads
-    - match: ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/
-      name: youtube_ads
-      type: response
-      require-body: true
-      binary-mode: true
-      timeout: 30
-
-    # RevenueCat Response (Locket Gold)
-    - match: ^https?:\/\/api\.revenuecat\.com\/.*\/(receipts$|subscribers\/.*)
-      name: revenuecat_response
-      type: response
-      require-body: true
-      timeout: 60
-
-    # RevenueCat Request Header
-    - match: ^https?:\/\/api\.revenuecat\.com\/.*\/(receipts|subscribers)
-      name: revenuecat_request
-      type: request
-      timeout: 60
+    - api.revenuecat.com
+    - *.revenuecat.com
 
 script-providers:
-
-  youtube_ads:
-    url: https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js
+  revenuecat:
+    url: https://raw.githubusercontent.com/YOURNAME/Stash/main/revenuecat.js
     interval: 86400
 
-  revenuecat_response:
-    url: https://raw.githubusercontent.com/app2smile/rules/master/js/revenuecat.js
-    interval: 86400
-
-  revenuecat_request:
-    url: https://raw.githubusercontent.com/app2smile/rules/master/js/revenuecat_header.js
-    interval: 86400
+script:
+  - match: ^https:\/\/api\.revenuecat\.com\/.*
+    name: revenuecat
+    type: response
+    require-body: true
+    timeout: 60
+    provider: revenuecat
 
 rules:
-  - DOMAIN,api.revenuecat.com,SCRIPT
-  - DOMAIN-SUFFIX,youtube.com,SCRIPT
-  - DOMAIN-SUFFIX,googlevideo.com,SCRIPT
+  - DOMAIN-SUFFIX,doubleclick.net,REJECT
+  - DOMAIN-SUFFIX,googleads.g.doubleclick.net,REJECT
+  - DOMAIN-SUFFIX,pagead2.googlesyndication.com,REJECT
+  - DOMAIN-SUFFIX,googlesyndication.com,REJECT
   - MATCH,DIRECT
-
-dns:
-  default-nameserver:
-    - 1.1.1.1
-    - 8.8.8.8
